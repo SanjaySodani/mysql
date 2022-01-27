@@ -1,0 +1,141 @@
+create schema guvi
+use guvi
+
+
+create table users (id int primary key auto_increment, name varchar(25), email varchar(40), age int);
+
+insert into users(name, email, age) values('Sanjay Sodani','sanjay@example.com',23);
+insert into users(name, email, age) values('Poonam Dodwani','poonam@example.com',24);
+insert into users(name, email, age) values('Sagar Shivdasani','sagar@example.com',25);
+insert into users(name, email, age) values('Kiran Bhojwani','kiran@example.com',28);
+insert into users(name, email, age) values('Khilesh Raheja','khilesh@example.com',20);
+
+
+create table codekata (user_id int not null, problems_solved int, foreign key (user_id) references users(id));
+
+insert into codekata values(1, 25);
+insert into codekata values(2, 20);
+insert into codekata values(3, 22);
+insert into codekata values(4, 29);
+insert into codekata values(5, 30);
+
+select users.name, codekata.problems_solved
+from users
+join codekata
+on users.id = codekata.user_id
+
+
+create table attendance (user_id int not null, present_date date not null, foreign key (user_id) references users(id));
+
+insert into attendance values(1, '2022-01-01');
+insert into attendance values(1, '2022-01-02');
+insert into attendance values(1, '2022-01-03');
+insert into attendance values(1, '2022-01-04');
+insert into attendance values(2, '2022-01-01');
+insert into attendance values(2, '2022-01-02');
+insert into attendance values(2, '2022-01-03');
+insert into attendance values(2, '2022-01-04');
+insert into attendance values(3, '2022-01-01');
+insert into attendance values(3, '2022-01-02');
+insert into attendance values(3, '2022-01-03');
+insert into attendance values(4, '2022-01-01');
+insert into attendance values(5, '2022-01-01');
+insert into attendance values(4, '2022-01-02');
+insert into attendance values(5, '2022-01-02');
+insert into attendance values(4, '2022-01-05');
+insert into attendance values(4, '2022-01-06');
+insert into attendance values(3, '2022-01-06');
+insert into attendance values(3, '2022-01-07');
+insert into attendance values(5, '2022-01-07');
+insert into attendance values(5, '2022-01-08');
+
+select u.name as 'Student name', count(a.present_date) as 'Attendance count'
+from users as u
+join attendance as a
+on a.user_id = u.id
+group by u.name;
+
+
+create table topics (topic_id int primary key auto_increment, topic_name varchar(20), hours_required int);
+
+insert into topics(topic_name, hours_required) values('ReactJs', 20);
+insert into topics(topic_name, hours_required) values('JavaScript', 15);
+insert into topics(topic_name, hours_required) values('HTML', 3);
+insert into topics(topic_name, hours_required) values('CSS', 5);
+insert into topics(topic_name, hours_required) values('NodeJs', 10);
+
+
+create table tasks (task_id int primary key auto_increment, task_name varchar(20));
+
+insert into tasks(task_name) values('Callback hell without setInterval and named functions');
+insert into tasks(task_name) values('JavaScript Calculator');
+insert into tasks(task_name) values('Pagination');
+insert into tasks(task_name) values('Working with APIs');
+insert into tasks(task_name) values('Demo static site with HTML and CSS');
+
+
+create table company_drives (user_id int not null, company_name varchar(20), foreign key(user_id) references users(id));
+
+insert into company_drives (user_id, company_name) values(1, 'TCS');
+insert into company_drives (user_id, company_name) values(1, 'WIPRO');
+insert into company_drives (user_id, company_name) values(2, 'HCL');
+insert into company_drives (user_id, company_name) values(3, 'Accenture');
+insert into company_drives (user_id, company_name) values(4, 'IBM');
+
+select u.name as 'Student name', count(c.user_id) as 'Company drives attended'
+from users as u
+join company_drives as c
+on u.id = c.user_id
+group by u.name
+
+
+create table mentors (mentor_id int primary key auto_increment, mentor_name varchar(20));
+
+insert into mentors (mentor_name) values('Nagarajan');
+insert into mentors (mentor_name) values('Raghav');
+insert into mentors (mentor_name) values('Mohommad');
+
+select mentor_name from mentors; 
+
+
+alter table users
+add column mentor int not null;
+
+update users set mentor = 2 where id=1
+update users set mentor = 2 where id=2
+update users set mentor = 1 where id=3
+update users set mentor = 1 where id=4
+update users set mentor = 3 where id=5
+
+
+select u.name as 'Student name', m.mentor_name as 'Mentor name'
+from users as u
+join mentors as m
+on m.mentor_id = u.mentor
+
+
+create table courses (course_id int primary key auto_increment, course_name varchar(20));
+
+insert into courses(course_name) values('ReactJs');
+insert into courses(course_name) values('JavaScript');
+insert into courses(course_name) values('HTML');
+insert into courses(course_name) values('CSS');
+insert into courses(course_name) values('NodeJs');
+
+
+create table students_activated_courses (user_id int not null, course_id int not null, 
+foreign key (user_id) references users(id),
+foreign key (course_id) references courses(course_id));
+
+insert into students_activated_courses(user_id, course_id) values(1,1);
+insert into students_activated_courses(user_id, course_id) values(1,2);
+insert into students_activated_courses(user_id, course_id) values(2,1);
+insert into students_activated_courses(user_id, course_id) values(3,2);
+insert into students_activated_courses(user_id, course_id) values(4,5);
+
+select c.course_name as 'Course name', count(sac.course_id) as 'Activation count'
+from courses as c
+join students_activated_courses as sac
+on sac.course_id = c.course_id
+group by c.course_name;
+
